@@ -39,4 +39,11 @@ if (!copiedBack.equals(pageBytes)) {
   );
 }
 
+// A whole PNG starts with its eight-byte signature; a truncated write
+// would not, so check that too before calling the copy good.
+const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+if (!copiedBack.subarray(0, 8).equals(pngSignature)) {
+  throw new Error("copy is not a PNG: bad signature in the first 8 bytes");
+}
+
 console.log(`wrote ${pageBytes.length} bytes to ${outPath}`);
